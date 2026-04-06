@@ -321,7 +321,7 @@ body {
     border-bottom: 1px solid var(--border-light);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
-  
+
   .sidebar-subtitle {
     margin-bottom: 1rem;
   }
@@ -351,5 +351,101 @@ body {
 
   .primary-btn {
     padding: 12px 24px;
+  }
+}
+
+/* --- MOBILE RESPONSIVENESS (SUBATOMIC) --- */
+@media (max-width: 768px) {
+
+  /* 1. Header & Element Selector */
+  .top-nav {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(2, 6, 23, 0.95);
+  }
+
+  .element-selector {
+    width: 100vw;
+    overflow-x: auto;
+    padding: 0 1rem 8px 0;
+    /* Hide scrollbar for clean UI but keep it scrollable */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .element-selector::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 2. Mission Board */
+  .mission-board {
+    top: 7rem;
+    left: 1rem;
+    width: calc(100vw - 2rem);
+    padding: 1rem;
+  }
+
+  /* 3. The Configurator (Turned into a horizontal dashboard) */
+  .configurator {
+    top: auto;
+    bottom: 5.5rem;
+    /* Sits right above the info panel */
+    right: 1rem;
+    left: 1rem;
+    width: calc(100vw - 2rem);
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .configurator h3 {
+    width: 100%;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+
+  /* Shrink inputs to sit side-by-side */
+  .configurator .input-group {
+    width: 31%;
+    /* 3 columns */
+    margin-bottom: 0;
+  }
+
+  .configurator .input-group label {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .configurator button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+  }
+
+  /* 4. Feedback & Info Panels */
+  .info-panel {
+    bottom: 1rem;
+    width: calc(100vw - 2rem);
+    min-width: 0;
+    padding: 1rem;
+  }
+
+  .info-panel h2 {
+    font-size: 18px;
+  }
+
+  .info-panel p {
+    font-size: 13px;
+  }
+
+  .feedback-panel {
+    width: 100%;
+    margin-top: 12px;
   }
 }
