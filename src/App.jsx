@@ -1,8 +1,9 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, DragControls, Html } from '@react-three/drei';
 import { Suspense, useState, useRef } from 'react';
 import * as THREE from 'three';
 import { useLabStore, EXPERIMENTS } from './store';
+import { Menu } from 'lucide-react';
 
 import Table from './components/Table';
 import Beaker from './components/Beaker';
@@ -49,9 +50,14 @@ function InteractiveFlask({ setIsDragging, flaskData, index, total }) {
   const visualRef = useRef();
   const hitboxRef = useRef();
   const [hovered, setHovered] = useState(false);
+  const [isLocalDragging, setIsLocalDragging] = useState(false);
   const { isMixed, isPouring, triggerPour, triggerReaction, pouredFlaskId } = useLabStore();
+  const { viewport } = useThree();
 
-  const startX = 0.2 + (index * 0.6);
+  const isMobile = viewport.width < 4;
+  const spacing = isMobile ? 0.4 : 0.6;
+  const offset = isMobile ? -0.1 : 0.2; // Adjusted offset slightly away from beaker
+  const startX = offset + (index * spacing);
   const START_POS = new THREE.Vector3(startX, -0.49, 0);
 
   const isThisFlaskPouring = isPouring === flaskData.id;
@@ -88,20 +94,43 @@ function InteractiveFlask({ setIsDragging, flaskData, index, total }) {
       return;
     }
 
-    hitboxRef.current.position.x = THREE.MathUtils.clamp(hitboxRef.current.position.x, -1.4, 2.0);
-    hitboxRef.current.position.z = THREE.MathUtils.clamp(hitboxRef.current.position.z, -0.6, 0.6);
-
-    const currentPos = new THREE.Vector3();
-    hitboxRef.current.getWorldPosition(currentPos);
-    visualRef.current.position.copy(currentPos);
-
-    const distance = currentPos.distanceTo(BEAKER_POSITION);
-    if (distance < 0.6 && !isPouring) triggerPour(flaskData.id);
+    if (!isLocalDragging && !isThisFlaskPouring) {
+      // If not dragging and not pouring, slowly lerp back to start position
+      visualRef.current.position.lerp(START_POS, delta * 4);
+      hitboxRef.current.position.lerp(START_POS, delta * 4);
+    } else if (isLocalDragging) {
+      hitboxRef.current.position.x = THREE.MathUtils.clamp(hitboxRef.current.position.x, -1.4, 2.0);
+      hitboxRef.current.position.z = THREE.MathUtils.clamp(hitboxRef.current.position.z, -0.6, 0.6);
+      
+      const currentPos = new THREE.Vector3();
+      hitboxRef.current.getWorldPosition(currentPos);
+      visualRef.current.position.lerp(currentPos, delta * 10);
+    }
   });
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+    setIsLocalDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setIsLocalDragging(false);
+
+    if (hitboxRef.current && !isPouring) {
+      const currentPos = new THREE.Vector3();
+      hitboxRef.current.getWorldPosition(currentPos);
+      const distance = currentPos.distanceTo(BEAKER_POSITION);
+      
+      if (distance < 0.7) {
+        triggerPour(flaskData.id);
+      }
+    }
+  };
 
   return (
     <>
-      <DragControls axisLock="y" onDragStart={() => setIsDragging(true)} onDragEnd={() => setIsDragging(false)}>
+      <DragControls axisLock="y" onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <mesh ref={hitboxRef} position={[startX, -0.49, 0]} onPointerDown={(e) => { if (isPouring || isMixed) e.stopPropagation(); }} onPointerOver={() => setHovered(true)} onPointerOut={() => setHovered(false)}>
           <boxGeometry args={[0.4, 0.8, 0.4]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -126,11 +155,16 @@ function InteractiveFlask({ setIsDragging, flaskData, index, total }) {
 
 export default function App() {
   const [isDragging, setIsDragging] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isMixed, resetKey, currentExp } = useLabStore();
 
   return (
     <div className="app-container">
-      <Sidebar />
+      <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+        <Menu size={24} />
+      </button>
+      
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className="canvas-wrapper">
         <ReactionModal />

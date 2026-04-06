@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLabStore } from '../store';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 
 export default function ReactionModal() {
   const { isMixed, resetLab, reactionState, currentExp, pouredFlaskId, temperature } = useLabStore();
@@ -36,8 +37,9 @@ export default function ReactionModal() {
           transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
           className="reaction-modal glass-panel"
         >
-          <div className={`status-badge ${isSuccess ? 'success' : 'error'}`}>
-            {isSuccess ? '✓ Reaction Success' : '✕ Reaction Failed'}
+          <div className={`status-badge ${isSuccess ? 'success' : 'error'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            {isSuccess ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+            {isSuccess ? 'Reaction Success' : 'Reaction Failed'}
           </div>
           <h2>{currentExp.name}</h2>
           <p className="reaction-desc">
@@ -55,7 +57,7 @@ export default function ReactionModal() {
               color: '#334155',
               lineHeight: '1.4',
               textAlign: 'left',
-              borderLeft: '4px solid #38bdf8'
+              borderLeft: isSuccess ? '4px solid #16a34a' : '4px solid #dc2626'
             }}>
                <span style={{ fontWeight: 'bold' }}>Teacher's Note:</span> {educationalReason}
             </div>

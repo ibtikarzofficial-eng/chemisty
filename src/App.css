@@ -14,6 +14,8 @@
   --success-bg: #dcfce7;
   --error-text: #dc2626;
   --error-bg: #fee2e2;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
 }
 
 body {
@@ -50,13 +52,20 @@ body {
   border-right: 1px solid var(--border-light);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
   /* Soft drop shadow into the lab */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   margin-bottom: 0.25rem;
+}
+
+.sidebar-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logo-icon {
@@ -312,14 +321,22 @@ body {
   }
 
   .sidebar {
-    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    max-height: 100vh;
     padding: 1.5rem;
-    height: auto;
-    max-height: 40vh;
     overflow-y: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid var(--border-light);
+    border-bottom: none;
+    box-shadow: 24px 0 48px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
   }
 
   .sidebar-subtitle {
@@ -327,125 +344,87 @@ body {
   }
 
   .canvas-wrapper {
-    width: 100%;
-    flex: 1;
+    width: 100vw;
+    height: 100vh;
+    flex: none;
   }
 
   .reaction-modal {
-    min-width: 90%;
-    width: 90%;
-    padding: 2rem 1.5rem;
+    min-width: 90vw;
+    width: 90vw;
+    padding: 1.5rem;
     top: 50%;
     transform: translate(-50%, -50%);
   }
 
   .reaction-modal h2 {
-    font-size: 24px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin-bottom: 8px;
   }
 
   .reaction-desc {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .primary-btn {
-    padding: 12px 24px;
+    padding: 12px 16px;
   }
 }
 
-/* --- MOBILE RESPONSIVENESS (SUBATOMIC) --- */
+/* Base styles for Mobile Menu Button & Overlay */
+.mobile-menu-btn {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 15;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-close-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 19;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.mobile-overlay.open {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
 @media (max-width: 768px) {
-
-  /* 1. Header & Element Selector */
-  .top-nav {
-    padding: 1rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    background: rgba(2, 6, 23, 0.95);
-  }
-
-  .element-selector {
-    width: 100vw;
-    overflow-x: auto;
-    padding: 0 1rem 8px 0;
-    /* Hide scrollbar for clean UI but keep it scrollable */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .element-selector::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* 2. Mission Board */
-  .mission-board {
-    top: 7rem;
-    left: 1rem;
-    width: calc(100vw - 2rem);
-    padding: 1rem;
-  }
-
-  /* 3. The Configurator (Turned into a horizontal dashboard) */
-  .configurator {
-    top: auto;
-    bottom: 5.5rem;
-    /* Sits right above the info panel */
-    right: 1rem;
-    left: 1rem;
-    width: calc(100vw - 2rem);
-    padding: 1rem;
+  .mobile-menu-btn {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: space-between;
   }
-
-  .configurator h3 {
-    width: 100%;
-    margin-bottom: 4px;
-    font-size: 14px;
-  }
-
-  /* Shrink inputs to sit side-by-side */
-  .configurator .input-group {
-    width: 31%;
-    /* 3 columns */
-    margin-bottom: 0;
-  }
-
-  .configurator .input-group label {
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .configurator button {
-    width: 100%;
-    margin-top: 8px;
-    padding: 12px;
-  }
-
-  /* 4. Feedback & Info Panels */
-  .info-panel {
-    bottom: 1rem;
-    width: calc(100vw - 2rem);
-    min-width: 0;
-    padding: 1rem;
-  }
-
-  .info-panel h2 {
-    font-size: 18px;
-  }
-
-  .info-panel p {
-    font-size: 13px;
-  }
-
-  .feedback-panel {
-    width: 100%;
-    margin-top: 12px;
+  .mobile-close-btn {
+    display: block;
   }
 }
