@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 
 export default function Decorations() {
-  const pipetteRef = useGLTF('/models/pipette.glb');
-  const thermoRef = useGLTF('/models/thermometer.glb');
-  const rackRef = useGLTF('/models/tuberack.glb');
+  const pipetteRef = useGLTF('/models/pipette-transformed.glb');
+  const thermoRef = useGLTF('/models/thermometer-transformed.glb');
+  const rackRef = useGLTF('/models/tuberack-transformed.glb');
 
   const pipetteScene = useMemo(() => pipetteRef.scene.clone(), [pipetteRef]);
   const thermoScene = useMemo(() => thermoRef.scene.clone(), [thermoRef]);
@@ -34,6 +34,6 @@ export default function Decorations() {
   );
 }
 
-useGLTF.preload('/models/pipette.glb');
-useGLTF.preload('/models/thermometer.glb');
-useGLTF.preload('/models/tuberack.glb');
+useGLTF.preload('/models/pipette-transformed.glb');
+useGLTF.preload('/models/thermometer-transformed.glb');
+useGLTF.preload('/models/tuberack-transformed.glb');
